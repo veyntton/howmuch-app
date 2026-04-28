@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -58,8 +59,6 @@ body{background:var(--dark);color:var(--text-primary);-webkit-text-size-adjust:n
 .nav-title{font-size:0.95rem;font-weight:700;}
 
 #calc-wrapper{padding:16px 14px 40px;}
-.ad-slot{height:50px;background:var(--formula-bg);border:1px dashed var(--card-border);
-  margin-bottom:14px;border-radius:8px;}
 
 .card{background:var(--card-bg);border-radius:12px;border:1px solid var(--card-border);margin-bottom:16px;overflow:hidden;}
 .card-header{display:flex;align-items:center;padding:11px 14px;background:var(--header-bg);border-bottom:1px solid var(--card-border);}
@@ -174,6 +173,13 @@ input[type="date"]::-webkit-calendar-picker-indicator{cursor:pointer;}
 .rr.g .rl{background:rgba(16,185,129,.07);color:#10b981;border-right-color:rgba(16,185,129,.25);}
 .rr.g .rv{background:rgba(16,185,129,.07);color:#10b981;}
 
+/* 연결고리 레이아웃 */
+.dual-linked-row{display:grid;grid-template-columns:1fr 34px 1fr;gap:0 4px;margin-bottom:11px;align-items:end;}
+.link-toggle{width:34px;height:38px;background:none;border:1px solid var(--card-border);border-radius:6px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:all .2s;color:var(--text-muted);}
+.link-toggle.linked{border-color:rgba(225,0,42,.45);color:var(--red);background:rgba(225,0,42,.08);}
+.link-toggle:active{transform:scale(.92);}
+
 </style>
 </head>
 <body>
@@ -216,6 +222,33 @@ input[type="date"]::-webkit-calendar-picker-indicator{cursor:pointer;}
 </div>
 
 <script>
+/* ===== 연결고리 SVG / 상태 ===== */
+var _LSVG='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
+var _USVG='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/><line x1="4" y1="4" x2="20" y2="20" stroke-width="2.2"/></svg>';
+var linkedMode={annual:true,salary:true,retire:true,unemp:true,sim:true};
+
+function lBtn(page){
+  return '<button class="link-toggle linked" id="lnk-'+page+'" onclick="toggleLink(\''+page+'\')" title="연동/분리">'+_LSVG+'</button>';
+}
+function toggleLink(page){
+  linkedMode[page]=!linkedMode[page];
+  var b=document.getElementById('lnk-'+page);if(!b)return;
+  if(linkedMode[page]){
+    b.className='link-toggle linked';b.innerHTML=_LSVG;
+    var fn={annual:annualAny,salary:calcSalAny,retire:retAny,unemp:uneAny,sim:simAny};
+    if(fn[page])fn[page]();
+  }else{b.className='link-toggle';b.innerHTML=_USVG;}
+}
+function _showOther(rid,lid,diff,isAnn){
+  var row=document.getElementById(rid);if(!row)return;
+  if(Math.abs(diff)<1){row.style.display='none';return;}
+  row.style.display='';
+  var lbl=document.getElementById(lid);
+  if(lbl)lbl.textContent=diff>0?(isAnn?'기타 공제(연)':'기타 공제(월)'):(isAnn?'기타 가산(연)':'기타 가산(월)');
+  var rv=row.querySelector('.rv');if(rv)rv.textContent=won(Math.abs(diff));
+}
+function _hideOther(rid){var r=document.getElementById(rid);if(r)r.style.display='none';}
+
 /* ===== 년도별 요율 테이블 ===== */
 var RATES = {
   2020: { PR:0.045,  PCAP:5030000, HR:0.03335, CR:0.1052, ER:0.008,  UU:66000,  UL:60120  },
@@ -400,7 +433,7 @@ function buildPage(id) {
   return '';
 }
 
-var AD = '<div class="ad-slot"></div>';
+var AD = '';
 
 function hdr(t, cid) {
   return '<div class="card-header"><h2>' + t + '</h2>' +
@@ -427,11 +460,12 @@ function pgAnnual() {
   '<div class="card-body">' +
   yearBar('annual', 'annualAny()') +
 
-  '<div class="dual-input-row">' +
+  '<div class="dual-linked-row">' +
     '<div class="dual-col">' +
       '<div class="dual-label gross">세전 입력</div>' +
       '<input class="inp" type="text" inputmode="numeric" id="an-sal" placeholder="예: 36,000,000" oninput="fmtInp(this);annualFromGross()">' +
     '</div>' +
+    lBtn('annual') +
     '<div class="dual-col">' +
       '<div class="dual-label">세후 입력</div>' +
       '<input class="inp" type="text" inputmode="numeric" id="an-sal-net" placeholder="연 실수령액" oninput="fmtInp(this);annualFromNet()">' +
@@ -460,18 +494,19 @@ function pgAnnual() {
     '<div class="rr"><div class="rl">지방소득세</div><div class="rv" id="an-r7">-</div></div>' +
     '<div class="dv"></div>' +
     '<div class="rr"><div class="rl">총 공제액(월)</div><div class="rv" id="an-r8">-</div></div>' +
+    '<div class="rr" id="an-r-oth" style="display:none"><div class="rl" id="an-r-oth-l">기타 공제(연)</div><div class="rv">-</div></div>' +
   '</div>' +
   '<div class="fml" id="an-fml">※ 세전 또는 세후 중 하나를 입력하면 자동 계산됩니다<br>※ 소득세는 근로소득공제+간이세액표 기반 근사값</div>' +
   '</div></div>';
 }
 
 function annualFromGross() {
-  var e = document.getElementById('an-sal-net'); if (e) e.value = '';
+  if(linkedMode.annual){var e=document.getElementById('an-sal-net');if(e)e.value='';}
   calcAnnualCore(true);
 }
 function annualFromNet() {
-  var e = document.getElementById('an-sal'); if (e) e.value = '';
-  calcAnnualCore(false);
+  if(linkedMode.annual){var e=document.getElementById('an-sal');if(e)e.value='';calcAnnualCore(false);}
+  else{if(rawNum('an-sal')>0)calcAnnualCore(true);else calcAnnualCore(false);}
 }
 function annualAny() {
   if (rawNum('an-sal') > 0) calcAnnualCore(true);
@@ -479,39 +514,34 @@ function annualAny() {
 }
 
 function calcAnnualCore(fromGross) {
-  var y = curYear['annual'] || 2026;
-  var R = RATES[y];
-  var nt = parseInt(gv('an-nt')) || 200000;
-  var dep = parseInt(gv('an-dep')) || 1;
-  var annual, mg, d;
+  var y = curYear['annual'] || 2026, R = RATES[y];
+  var nt = parseInt(gv('an-nt')) || 200000, dep = parseInt(gv('an-dep')) || 1;
+  var annual, mg, d, linked = linkedMode.annual;
   if (fromGross) {
     annual = rawNum('an-sal'); if (!annual || annual <= 0) return;
     mg = Math.round(annual / 12);
     d = deduct(mg, nt, dep, 'annual');
-    var ne = document.getElementById('an-sal-net');
-    if (ne) ne.value = Math.round(d.net * 12).toLocaleString('ko-KR');
+    if (linked) { var ne = document.getElementById('an-sal-net'); if (ne) ne.value = Math.round(d.net * 12).toLocaleString('ko-KR'); }
   } else {
     var netAnnual = rawNum('an-sal-net'); if (!netAnnual || netAnnual <= 0) return;
     var netMo = Math.round(netAnnual / 12);
     var lo = netMo, hi = netMo * 2.5;
     for (var i = 0; i < 60; i++) { var m = (lo+hi)/2; deduct(m,nt,dep,'annual').net < netMo ? lo=m : hi=m; }
-    mg = Math.round((lo+hi)/2);
-    annual = mg * 12;
+    mg = Math.round((lo+hi)/2); annual = mg * 12;
     d = deduct(mg, nt, dep, 'annual');
-    var ge = document.getElementById('an-sal');
-    if (ge) ge.value = annual.toLocaleString('ko-KR');
+    if (linked) { var ge = document.getElementById('an-sal'); if (ge) ge.value = annual.toLocaleString('ko-KR'); }
   }
-  st('an-r-ya', won(annual));
-  st('an-r1',  won(mg));
-  st('an-r9',  won(d.net));
-  st('an-r10', won(d.net * 12));
-  st('an-r2',  won(d.pen)  + ' (' + (R.PR*100).toFixed(2) + '%)');
-  st('an-r3',  won(d.hlt)  + ' (' + (R.HR*100).toFixed(3) + '%)');
-  st('an-r4',  won(d.care));
-  st('an-r5',  won(d.emp)  + ' (' + (R.ER*100).toFixed(1) + '%)');
-  st('an-r6',  won(d.inc));
-  st('an-r7',  won(d.loc));
-  st('an-r8',  won(d.tot));
+  st('an-r-ya', won(annual)); st('an-r1', won(mg)); st('an-r9', won(d.net)); st('an-r10', won(d.net * 12));
+  st('an-r2', won(d.pen) + ' (' + (R.PR*100).toFixed(2) + '%)');
+  st('an-r3', won(d.hlt) + ' (' + (R.HR*100).toFixed(3) + '%)');
+  st('an-r4', won(d.care));
+  st('an-r5', won(d.emp) + ' (' + (R.ER*100).toFixed(1) + '%)');
+  st('an-r6', won(d.inc)); st('an-r7', won(d.loc)); st('an-r8', won(d.tot));
+  if (!linked && fromGross) {
+    var actNet = rawNum('an-sal-net');
+    if (actNet > 0) _showOther('an-r-oth','an-r-oth-l', d.net * 12 - actNet, true);
+    else _hideOther('an-r-oth');
+  } else { _hideOther('an-r-oth'); }
   var fml = document.getElementById('an-fml');
   if (fml) fml.innerHTML =
     '※ ' + y + '년 기준 요율 적용<br>' +
@@ -528,11 +558,12 @@ function pgSal() {
   yearBar('salary', 'calcSal()') +
 
   /* 세전/세후 나란히 입력 */
-  '<div class="dual-input-row">' +
+  '<div class="dual-linked-row">' +
     '<div class="dual-col">' +
       '<div class="dual-label gross">세전 입력</div>' +
       '<input class="inp" type="text" inputmode="numeric" id="t1g" placeholder="예: 3,000,000" oninput="fmtInp(this);calcSalFromGross()">' +
     '</div>' +
+    lBtn('salary') +
     '<div class="dual-col">' +
       '<div class="dual-label">세후 입력</div>' +
       '<input class="inp" type="text" inputmode="numeric" id="t2n" placeholder="통장 입금액" oninput="fmtInp(this);calcSalFromNet()">' +
@@ -558,6 +589,7 @@ function pgSal() {
     '<div class="rr"><div class="rl">지방소득세</div><div class="rv" id="r1f">-</div></div>' +
     '<div class="dv"></div>' +
     '<div class="rr"><div class="rl">총 공제액(월)</div><div class="rv" id="r1tot">-</div></div>' +
+    '<div class="rr" id="sal-r-oth" style="display:none"><div class="rl" id="sal-r-oth-l">기타 공제(월)</div><div class="rv">-</div></div>' +
   '</div>' +
 
   '<div class="fml" id="sal-fml">※ 세전 또는 세후 중 하나를 입력하면 자동 계산됩니다<br>※ 소득세는 근로소득공제+간이세액표 기반 근사값</div>' +
@@ -566,13 +598,13 @@ function pgSal() {
 
 /* 세전 입력 시 */
 function calcSalFromGross() {
-  var e = document.getElementById('t2n'); if (e) e.value = '';
+  if(linkedMode.salary){var e=document.getElementById('t2n');if(e)e.value='';}
   calcSalCore(true);
 }
 /* 세후 입력 시 */
 function calcSalFromNet() {
-  var e = document.getElementById('t1g'); if (e) e.value = '';
-  calcSalCore(false);
+  if(linkedMode.salary){var e=document.getElementById('t1g');if(e)e.value='';calcSalCore(false);}
+  else{if(rawNum('t1g')>0)calcSalCore(true);else calcSalCore(false);}
 }
 /* 비과세/부양가족 변경 시 - 마지막 입력 방향 재계산 */
 function calcSalAny() {
@@ -583,37 +615,31 @@ function calcSalAny() {
 }
 
 function calcSalCore(fromGross) {
-  var y = curYear['salary'] || 2026;
-  var R = RATES[y];
-  var nt = parseInt(gv('t1n')) || 200000;
-  var dep = parseInt(gv('t1d')) || 1;
-  var g, d;
+  var y = curYear['salary'] || 2026, R = RATES[y];
+  var nt = parseInt(gv('t1n')) || 200000, dep = parseInt(gv('t1d')) || 1;
+  var g, d, linked = linkedMode.salary;
   if (fromGross) {
     g = rawNum('t1g'); if (!g || g <= 0) return;
     d = deduct(g, nt, dep, 'salary');
-    /* 세후 입력창에 역산값 표시 */
-    var ne = document.getElementById('t2n');
-    if (ne) ne.value = Math.round(d.net).toLocaleString('ko-KR');
+    if (linked) { var ne = document.getElementById('t2n'); if (ne) ne.value = Math.round(d.net).toLocaleString('ko-KR'); }
   } else {
     var net = rawNum('t2n'); if (!net || net <= 0) return;
     var lo = net, hi = net * 2.5;
     for (var i = 0; i < 60; i++) { var m = (lo+hi)/2; deduct(m,nt,dep,'salary').net < net ? lo=m : hi=m; }
     g = Math.round((lo+hi)/2); d = deduct(g, nt, dep, 'salary');
-    /* 세전 입력창에 역산값 표시 */
-    var ge = document.getElementById('t1g');
-    if (ge) ge.value = g.toLocaleString('ko-KR');
+    if (linked) { var ge = document.getElementById('t1g'); if (ge) ge.value = g.toLocaleString('ko-KR'); }
   }
-  st('r1g',   won(g));
-  st('r1h',   won(d.net));
-  st('r1ann', won(g * 12));
-  st('r1ann2',won(d.net * 12));
-  st('r1a',   won(d.pen) + ' (' + (R.PR*100).toFixed(2) + '%)');
-  st('r1b',   won(d.hlt) + ' (' + (R.HR*100).toFixed(3) + '%)');
-  st('r1c',   won(d.care));
-  st('r1d',   won(d.emp) + ' (' + (R.ER*100).toFixed(1) + '%)');
-  st('r1e',   won(d.inc));
-  st('r1f',   won(d.loc));
-  st('r1tot', won(d.tot));
+  st('r1g', won(g)); st('r1h', won(d.net)); st('r1ann', won(g * 12)); st('r1ann2', won(d.net * 12));
+  st('r1a', won(d.pen) + ' (' + (R.PR*100).toFixed(2) + '%)');
+  st('r1b', won(d.hlt) + ' (' + (R.HR*100).toFixed(3) + '%)');
+  st('r1c', won(d.care));
+  st('r1d', won(d.emp) + ' (' + (R.ER*100).toFixed(1) + '%)');
+  st('r1e', won(d.inc)); st('r1f', won(d.loc)); st('r1tot', won(d.tot));
+  if (!linked && fromGross) {
+    var actNet = rawNum('t2n');
+    if (actNet > 0) _showOther('sal-r-oth','sal-r-oth-l', d.net - actNet, false);
+    else _hideOther('sal-r-oth');
+  } else { _hideOther('sal-r-oth'); }
   updateSalFml(y, R);
 }
 
@@ -707,11 +733,12 @@ function pgRet() {
     '<div class="ig"><span class="il">퇴사일</span><input class="inp inp-date" type="date" id="re" oninput="calcRet()"></div>' +
   '</div>' +
   '<span class="il" style="display:block;margin-bottom:6px">월급 · 퇴사 전 3개월 평균</span>' +
-  '<div class="dual-input-row" style="margin-bottom:11px">' +
+  '<div class="dual-linked-row">' +
     '<div class="dual-col">' +
       '<div class="dual-label gross">세전 입력</div>' +
       '<input class="inp" type="text" inputmode="numeric" id="rsal" placeholder="예: 3,000,000" oninput="fmtInp(this);retFromGross()">' +
     '</div>' +
+    lBtn('retire') +
     '<div class="dual-col">' +
       '<div class="dual-label">세후 입력</div>' +
       '<input class="inp" type="text" inputmode="numeric" id="rsal-net" placeholder="통장 입금액" oninput="fmtInp(this);retFromNet()">' +
@@ -737,11 +764,11 @@ function pgRet() {
 }
 
 function retFromGross() {
-  var e = document.getElementById('rsal-net'); if (e) e.value = '';
+  if(linkedMode.retire){var e=document.getElementById('rsal-net');if(e)e.value='';}
   calcRet();
 }
 function retFromNet() {
-  var e = document.getElementById('rsal'); if (e) e.value = '';
+  if(linkedMode.retire){var e=document.getElementById('rsal');if(e)e.value='';}
   calcRet();
 }
 function retAny() {
@@ -761,7 +788,7 @@ function calcRet() {
     /* 세후 역산해서 표시 */
     var dTmp = deduct(sal, nt, dep, 'retire');
     var netEl = document.getElementById('rsal-net');
-    if (netEl && netEl.value === '') netEl.value = Math.round(dTmp.net).toLocaleString('ko-KR');
+    if (netEl && netEl.value === '' && linkedMode.retire) netEl.value = Math.round(dTmp.net).toLocaleString('ko-KR');
   } else if (salNet > 0) {
     /* 세전 역산 */
     var lo = salNet, hi = salNet * 2.5;
@@ -769,7 +796,7 @@ function calcRet() {
     sal = Math.round((lo+hi)/2);
     grossDisplay = sal;
     var gEl = document.getElementById('rsal');
-    if (gEl && gEl.value === '') gEl.value = sal.toLocaleString('ko-KR');
+    if (gEl && gEl.value === '' && linkedMode.retire) gEl.value = sal.toLocaleString('ko-KR');
   } else { return; }
 
   if (!s || !e) { st('rrc-gross', won(grossDisplay)); return; }
@@ -794,11 +821,12 @@ function pgUne() {
   '</div>' +
   '<div class="ig"><span class="il">입사일 (고용보험 가입일)</span><input class="inp inp-date" type="date" id="us" oninput="calcUne()"></div>' +
   '<span class="il" style="display:block;margin-bottom:6px">월급 · 퇴사 전 3개월 평균</span>' +
-  '<div class="dual-input-row" style="margin-bottom:11px">' +
+  '<div class="dual-linked-row">' +
     '<div class="dual-col">' +
       '<div class="dual-label gross">세전 입력</div>' +
       '<input class="inp" type="text" inputmode="numeric" id="usl" placeholder="예: 3,000,000" oninput="fmtInp(this);uneFromGross()">' +
     '</div>' +
+    lBtn('unemp') +
     '<div class="dual-col">' +
       '<div class="dual-label">세후 입력</div>' +
       '<input class="inp" type="text" inputmode="numeric" id="usl-net" placeholder="통장 입금액" oninput="fmtInp(this);uneFromNet()">' +
@@ -822,11 +850,11 @@ function pgUne() {
 }
 
 function uneFromGross() {
-  var e = document.getElementById('usl-net'); if (e) e.value = '';
+  if(linkedMode.unemp){var e=document.getElementById('usl-net');if(e)e.value='';}
   calcUne();
 }
 function uneFromNet() {
-  var e = document.getElementById('usl'); if (e) e.value = '';
+  if(linkedMode.unemp){var e=document.getElementById('usl');if(e)e.value='';}
   calcUne();
 }
 function uneAny() {
@@ -844,13 +872,13 @@ function calcUne() {
     sal = salGross;
     var dTmp = deduct(sal, nt, dep, 'unemp');
     var netEl = document.getElementById('usl-net');
-    if (netEl && netEl.value === '') netEl.value = Math.round(dTmp.net).toLocaleString('ko-KR');
+    if (netEl && netEl.value === '' && linkedMode.unemp) netEl.value = Math.round(dTmp.net).toLocaleString('ko-KR');
   } else if (salNet > 0) {
     var lo = salNet, hi = salNet * 2.5;
     for (var i = 0; i < 60; i++) { var m2 = (lo+hi)/2; deduct(m2,nt,dep,'unemp').net < salNet ? lo=m2 : hi=m2; }
     sal = Math.round((lo+hi)/2);
     var gEl = document.getElementById('usl');
-    if (gEl && gEl.value === '') gEl.value = sal.toLocaleString('ko-KR');
+    if (gEl && gEl.value === '' && linkedMode.unemp) gEl.value = sal.toLocaleString('ko-KR');
   } else { return; }
 
   st('u-gross', won(sal));
@@ -884,11 +912,12 @@ function pgSim() {
   '</div>' +
   '<div class="ig"><span class="il">퇴사 예정일</span><input class="inp inp-date" type="date" id="se" oninput="calcSim()"></div>' +
   '<span class="il" style="display:block;margin-bottom:6px">월급</span>' +
-  '<div class="dual-input-row" style="margin-bottom:11px">' +
+  '<div class="dual-linked-row">' +
     '<div class="dual-col">' +
       '<div class="dual-label gross">세전 입력</div>' +
       '<input class="inp" type="text" inputmode="numeric" id="ssal" placeholder="예: 3,000,000" oninput="fmtInp(this);simFromGross()">' +
     '</div>' +
+    lBtn('sim') +
     '<div class="dual-col">' +
       '<div class="dual-label">세후 입력</div>' +
       '<input class="inp" type="text" inputmode="numeric" id="ssal-net" placeholder="통장 입금액" oninput="fmtInp(this);simFromNet()">' +
@@ -915,11 +944,11 @@ function pgSim() {
 }
 
 function simFromGross() {
-  var e = document.getElementById('ssal-net'); if (e) e.value = '';
+  if(linkedMode.sim){var e=document.getElementById('ssal-net');if(e)e.value='';}
   calcSim();
 }
 function simFromNet() {
-  var e = document.getElementById('ssal'); if (e) e.value = '';
+  if(linkedMode.sim){var e=document.getElementById('ssal');if(e)e.value='';}
   calcSim();
 }
 function simAny() {
@@ -937,18 +966,19 @@ function calcSim() {
     sal = salGross;
     var dTmp = deduct(sal, nt, dep, 'sim');
     var netEl = document.getElementById('ssal-net');
-    if (netEl && netEl.value === '') netEl.value = Math.round(dTmp.net).toLocaleString('ko-KR');
+    if (netEl && netEl.value === '' && linkedMode.sim) netEl.value = Math.round(dTmp.net).toLocaleString('ko-KR');
   } else if (salNet > 0) {
     var lo = salNet, hi = salNet * 2.5;
     for (var i = 0; i < 60; i++) { var m2 = (lo+hi)/2; deduct(m2,nt,dep,'sim').net < salNet ? lo=m2 : hi=m2; }
     sal = Math.round((lo+hi)/2);
     var gEl = document.getElementById('ssal');
-    if (gEl && gEl.value === '') gEl.value = sal.toLocaleString('ko-KR');
+    if (gEl && gEl.value === '' && linkedMode.sim) gEl.value = sal.toLocaleString('ko-KR');
   } else { return; }
 
   st('s-gross', won(sal));
   var d = deduct(sal, nt, dep, 'sim');
-  st('sna', won(d.net));
+  var netForCalc = (!linkedMode.sim && rawNum('ssal-net') > 0) ? rawNum('ssal-net') : d.net;
+  st('sna', won(netForCalc));
   var bir = gv('sb'), sta = gv('ss'), end = gv('se'), bon = rawNum('sbon');
   var rp = 0, up = 0;
   if (sta && end) {
@@ -966,7 +996,7 @@ function calcSim() {
       up = ud * udDays(age2, mo2); st('snc', won(up));
     }
   }
-  st('snt', won(d.net + rp + up));
+  st('snt', won(netForCalc + rp + up));
   var fml = document.getElementById('sim-fml');
   if (fml) fml.innerHTML =
     '※ 실업급여는 비자발적 퇴사(권고사직·계약만료) 기준<br>' +
@@ -986,6 +1016,17 @@ function doReset(cid) {
   var m = RM[cid]; if (!m) return;
   m.inp.forEach(function(id) { var e = document.getElementById(id); if (e) e.value = ''; });
   m.out.forEach(function(id) { st(id, '-'); });
+  // 기타 공제 행 숨김
+  var otherMap = {'card-annual':'an-r-oth','card-salary':'sal-r-oth'};
+  if(otherMap[cid]) _hideOther(otherMap[cid]);
+  // 연결고리 상태 초기화
+  var pageMap = {'card-annual':'annual','card-salary':'salary','card-retire':'retire','card-unemp':'unemp','card-sim':'sim'};
+  var page = pageMap[cid];
+  if(page && !linkedMode[page]){
+    linkedMode[page]=true;
+    var btn=document.getElementById('lnk-'+page);
+    if(btn){btn.className='link-toggle linked';btn.innerHTML=_LSVG;}
+  }
 }
 
 /* ===== 이력 시스템 ===== */
