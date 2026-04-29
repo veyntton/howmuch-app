@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -126,45 +127,56 @@ select.inp{appearance:none;cursor:pointer;
 .extra-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;
   padding:10px 13px;background:var(--formula-bg);border:none;cursor:pointer;font-family:inherit;}
 .extra-toggle-label{font-size:0.78rem;font-weight:700;color:var(--text-secondary);}
-.extra-toggle-arrow{font-size:0.82rem;color:var(--text-muted);transition:transform .2s;}
-.extra-toggle.open .extra-toggle-arrow{transform:rotate(180deg);}
+.extra-toggle-arrow{font-size:1.1rem;color:var(--text-muted);line-height:1;
+  display:inline-block;transition:transform .2s;font-weight:300;}
+.extra-toggle.open .extra-toggle-arrow{transform:rotate(90deg);}
 .extra-body{display:none;padding:10px 10px 6px;}
 .extra-body.open{display:block;}
-.extra-row{display:flex;align-items:center;gap:6px;margin-bottom:7px;}
-.extra-sel{flex:0 0 auto;height:36px;font-size:0.74rem;font-family:inherit;
-  background:var(--input-bg);border:1px solid var(--input-border);border-radius:6px;
-  color:var(--text-primary);padding:0 6px;cursor:pointer;max-width:148px;}
-.extra-label-inp{flex:0 0 90px;height:36px;font-size:0.74rem;font-family:inherit;
-  background:var(--input-bg);border:1px solid var(--input-border);border-radius:6px;
-  color:var(--text-primary);padding:0 8px;}
-.extra-amt{flex:1;height:36px;font-size:0.78rem;font-family:inherit;text-align:right;
-  background:var(--input-bg);border:1px solid var(--input-border);border-radius:6px;
-  color:var(--text-primary);padding:0 8px;}
-.extra-amt.pos{border-color:rgba(16,185,129,.45);color:#10b981;}
-.extra-amt.neg{border-color:rgba(225,0,42,.35);color:var(--red);}
-.extra-del{width:28px;height:28px;flex-shrink:0;background:none;
-  border:1px solid var(--card-border);border-radius:5px;cursor:pointer;
-  color:var(--text-muted);font-size:1rem;line-height:1;font-family:inherit;}
-.extra-del:hover{border-color:var(--red);color:var(--red);}
-.extra-sign{width:32px;height:36px;flex-shrink:0;background:none;border:1px solid var(--card-border);
-  border-radius:6px;cursor:pointer;font-size:1rem;font-weight:700;font-family:inherit;color:var(--text-muted);
-  display:none;align-items:center;justify-content:center;}
-.extra-sign.show{display:flex;}
-.extra-sign.pos{border-color:rgba(16,185,129,.45);color:#10b981;background:rgba(16,185,129,.07);}
-.extra-sign.neg{border-color:rgba(225,0,42,.35);color:var(--red);background:rgba(225,0,42,.06);}
+
+.extra-row{display:flex;flex-direction:column;gap:0;margin-bottom:8px;
+  background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;overflow:hidden;}
+.extra-row-top{display:flex;align-items:center;border-bottom:1px solid var(--card-border);background:var(--formula-bg);}
+.extra-row-mid{display:none;align-items:center;border-bottom:1px solid var(--card-border);}
+.extra-row-mid.show{display:flex;}
+.extra-row-bot{display:flex;align-items:center;}
+
+.extra-sel{flex:1;height:36px;font-size:0.76rem;font-family:inherit;
+  appearance:none;cursor:pointer;
+  background-color:transparent;border:none;color:var(--text-primary);padding:0 28px 0 10px;outline:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;}
+.extra-label-inp{flex:1;height:38px;font-size:0.76rem;font-family:inherit;
+  background:transparent;border:none;color:var(--text-primary);padding:0 12px;outline:none;}
+.extra-label-inp::placeholder{color:var(--text-muted);}
+
+.extra-amt{flex:1;height:40px;font-size:0.86rem;font-family:inherit;text-align:right;
+  background:transparent;border:none;color:var(--text-primary);padding:0 12px;font-weight:700;outline:none;}
+.extra-amt::placeholder{color:var(--text-muted);font-weight:400;}
+.extra-amt.pos{color:#10b981;}
+.extra-amt.neg{color:var(--red);}
+
+.extra-del{width:40px;height:36px;flex-shrink:0;background:none;
+  border:none;border-left:1px solid var(--card-border);cursor:pointer;
+  color:var(--text-muted);font-size:1.1rem;display:flex;align-items:center;justify-content:center;}
+.extra-del:hover{color:var(--red);}
+
+/* +/- 두 버튼 (직접입력 전용) */
+.extra-sign-wrap{display:none;flex-shrink:0;border-right:1px solid var(--card-border);}
+.extra-sign-wrap.show{display:flex;}
+.extra-sign{width:36px;height:40px;background:none;border:none;cursor:pointer;
+  font-size:1.05rem;font-weight:800;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:color .15s,background .15s;}
+.extra-sign+.extra-sign{border-left:1px solid var(--card-border);}
+.extra-sign.active-pos{color:#10b981;background:rgba(16,185,129,.08);}
+.extra-sign.active-neg{color:var(--red);background:rgba(225,0,42,.07);}
+
 .extra-add{width:100%;height:34px;background:none;border:1px dashed var(--card-border);
   border-radius:6px;color:var(--text-muted);font-size:0.75rem;font-weight:700;
   cursor:pointer;font-family:inherit;margin-top:2px;transition:color .15s,border-color .15s;}
 .extra-add:hover{border-color:var(--red);color:var(--red);}
 .extra-result{margin-top:8px;}
-.rr.extra-pos{border-color:rgba(16,185,129,.35);}
-.rr.extra-pos .rl{background:rgba(16,185,129,.07);color:#10b981;}
-.rr.extra-pos .rv{background:rgba(16,185,129,.07);color:#10b981;}
-.rr.extra-neg .rl{background:rgba(225,0,42,.06);color:var(--red);}
-.rr.extra-neg .rv{background:rgba(225,0,42,.06);color:var(--red);}
-.rr.extra-tot{border-color:rgba(16,185,129,.45);}
-.rr.extra-tot .rl{background:rgba(16,185,129,.12);color:#059669;font-weight:800;}
-.rr.extra-tot .rv{background:rgba(16,185,129,.12);color:#059669;font-weight:800;}
+.rr.extra-tot .rl{font-weight:800;}
+.rr.extra-tot .rv{font-weight:800;}
 
 /* ===== 햄버거 버튼 ===== */
 .hamburger-btn{background:none;border:none;cursor:pointer;padding:5px 8px;
@@ -201,7 +213,9 @@ select.inp{appearance:none;cursor:pointer;
 .sh-cat-right{display:flex;align-items:center;gap:7px;}
 .sh-cat-count{font-size:0.67rem;font-weight:800;color:#111;background:rgba(225,0,42,.18);
   border:1px solid rgba(225,0,42,.3);border-radius:4px;padding:2px 8px;}
-.sh-cat-arrow{font-size:1rem;color:var(--text-secondary);transition:transform .2s;line-height:1;}
+.sh-cat-arrow{font-size:1.1rem;color:var(--text-muted);transition:transform .2s;line-height:1;
+  display:inline-block;font-weight:300;}
+.sh-cat-hdr.open .sh-cat-arrow{transform:rotate(90deg);}
 .sh-cat-body{display:none;border:1px solid rgba(225,0,42,.25);border-top:none;
   border-radius:0 0 8px 8px;padding:8px 8px 4px;background:var(--darker);}
 .sh-cat-body.open{display:block;}
@@ -433,15 +447,30 @@ function _showOther(rid,lid,diff,isAnn){
 }
 function _hideOther(rid){var r=document.getElementById(rid);if(r)r.style.display='none';}
 
-/* ===== 년도별 요율 테이블 ===== */
+/* ===== 년도별 요율 테이블 =====
+   PR   : 국민연금 근로자 부담률 (본인 부담)
+   PCAP : 국민연금 기준소득월액 상한 (원)
+   HR   : 건강보험 근로자 부담률
+   CR   : 장기요양보험료율 (건강보험료 대비 %)
+   ER   : 고용보험 근로자 부담률
+   UU   : 구직급여 1일 상한액 (원)
+   UL   : 구직급여 1일 하한액 = 최저시급×8시간×80% (원)
+   ===================================== */
 var RATES = {
-  2020: { PR:0.045,  PCAP:5030000, HR:0.03335, CR:0.1052, ER:0.008,  UU:66000,  UL:60120  },
-  2021: { PR:0.045,  PCAP:5240000, HR:0.03430, CR:0.1125, ER:0.008,  UU:66000,  UL:61568  },
-  2022: { PR:0.045,  PCAP:5530000, HR:0.03495, CR:0.1227, ER:0.009,  UU:66000,  UL:61568  },
-  2023: { PR:0.045,  PCAP:5900000, HR:0.03545, CR:0.1281, ER:0.009,  UU:66000,  UL:61568  },
-  2024: { PR:0.045,  PCAP:6170000, HR:0.03545, CR:0.1295, ER:0.009,  UU:66000,  UL:63104  },
-  2025: { PR:0.045,  PCAP:6370000, HR:0.03545, CR:0.1295, ER:0.009,  UU:66000,  UL:63104  },
-  2026: { PR:0.0475, PCAP:6370000, HR:0.03595, CR:0.1314, ER:0.009,  UU:68100,  UL:66048  }
+  /* 최저시급: 8,590원 */
+  2020: { PR:0.045,  PCAP:5030000, HR:0.03335, CR:0.1052, ER:0.008, UU:66000, UL:60120  },
+  /* 최저시급: 8,720원 */
+  2021: { PR:0.045,  PCAP:5240000, HR:0.03430, CR:0.1125, ER:0.008, UU:66000, UL:61568  },
+  /* 최저시급: 9,160원 */
+  2022: { PR:0.045,  PCAP:5530000, HR:0.03495, CR:0.1227, ER:0.009, UU:66000, UL:61568  },
+  /* 최저시급: 9,620원 */
+  2023: { PR:0.045,  PCAP:5900000, HR:0.03545, CR:0.1281, ER:0.009, UU:66000, UL:61568  },
+  /* 최저시급: 9,860원 */
+  2024: { PR:0.045,  PCAP:6170000, HR:0.03545, CR:0.1295, ER:0.009, UU:66000, UL:63104  },
+  /* 최저시급: 10,030원 / 하한 = 10,030×8×0.8 = 64,192원 */
+  2025: { PR:0.045,  PCAP:6370000, HR:0.03545, CR:0.1295, ER:0.009, UU:66000, UL:64192  },
+  /* 최저시급: 10,320원 / 국민연금 4.75% (개정) / 건강보험 3.595% */
+  2026: { PR:0.0475, PCAP:6370000, HR:0.03595, CR:0.1314, ER:0.009, UU:68100, UL:66048  }
 };
 
 /* 현재 선택 년도 */
@@ -451,16 +480,24 @@ function getRates(page) {
   return RATES[curYear[page] || 2026];
 }
 
-/* ===== 소득세 (근로소득 간이세액표 근사) ===== */
+/* ===== 소득세 (근로소득 간이세액표 근사) =====
+   1. 근로소득공제(d) 계산 후 근로소득금액 산출
+   2. 인적공제(부양가족 1인당 150만원) 차감
+   3. 종합소득세율 구간 적용 → 월 환산
+   ===================================== */
 function incTax(mg, nt, dep) {
+  /* 연간 과세 급여 (비과세 제외) */
   var a = Math.max(0, (mg - nt) * 12), d;
+  /* 근로소득공제 */
   if      (a <= 5e6)   d = a * .7;
   else if (a <= 15e6)  d = 3500000  + (a - 5e6)  * .4;
   else if (a <= 45e6)  d = 7500000  + (a - 15e6) * .15;
   else if (a <= 1e8)   d = 12000000 + (a - 45e6) * .05;
   else                 d = 14750000 + (a - 1e8)  * .02;
-  d = Math.min(d, 2e7);
+  d = Math.min(d, 2e7);                    /* 공제 한도 2,000만원 */
+  /* 종합소득세 과세표준 (인적공제: 1인당 150만원) */
   var b = Math.max(0, a - d - dep * 1500000), t;
+  /* 종합소득세율 구간 */
   if      (b <= 14e6)  t = b * .06;
   else if (b <= 5e7)   t = 840000    + (b - 14e6)  * .15;
   else if (b <= 88e6)  t = 6240000   + (b - 5e7)   * .24;
@@ -469,13 +506,18 @@ function incTax(mg, nt, dep) {
   else if (b <= 5e8)   t = 94060000  + (b - 3e8)   * .4;
   else if (b <= 1e9)   t = 174060000 + (b - 5e8)   * .42;
   else                 t = 384060000 + (b - 1e9)   * .45;
-  return Math.max(0, Math.round(t / 12));
+  return Math.max(0, Math.round(t / 12));  /* 월 환산 */
 }
 
-/* ===== 공제 계산 ===== */
+/* ===== 공제 계산 =====
+   g   : 월 급여(세전)
+   nt  : 비과세 식대 월액
+   dep : 부양가족수(본인 포함)
+   tb  : 과세표준 월액 (급여 - 비과세, 최소 0)
+   ===================================== */
 function deduct(g, nt, dep, page) {
   var R = getRates(page || 'salary');
-  var tb   = g - nt;
+  var tb   = Math.max(0, g - nt);          /* 비과세 초과 시 0 처리 */
   var pen  = Math.round(Math.min(tb, R.PCAP) * R.PR);
   var hlt  = Math.round(tb * R.HR);
   var care = Math.round(hlt * R.CR);
@@ -676,7 +718,7 @@ function pgAnnual() {
   '<div class="extra-sec">' +
     '<button class="extra-toggle" id="an-extra-toggle" onclick="toggleExtra(\'an\')">' +
       '<span class="extra-toggle-label">추가 공제 / 비과세 입력 (선택)</span>' +
-      '<span class="extra-toggle-arrow">▾</span>' +
+      '<span class="extra-toggle-arrow">›</span>' +
     '</button>' +
     '<div class="extra-body" id="an-extra-body">' +
       '<div id="an-extra-rows"></div>' +
@@ -732,7 +774,7 @@ function calcAnnualCore(fromGross) {
   } else {
     var netAnnual = rawNum('an-sal-net'); if (!netAnnual || netAnnual <= 0) return;
     var netMo = Math.round(netAnnual / 12);
-    var lo = netMo, hi = netMo * 2.5;
+    var lo = Math.max(netMo, nt), hi = Math.max(netMo * 2.5, nt * 3);
     for (var i = 0; i < 60; i++) { var m = (lo+hi)/2; deduct(m,nt,dep,'annual').net < netMo ? lo=m : hi=m; }
     mg = Math.round((lo+hi)/2); annual = mg * 12;
     d = deduct(mg, nt, dep, 'annual');
@@ -787,28 +829,60 @@ function addExtraRow(prefix, val, amt, customLabel) {
   var amtStr = amtAbs ? Number(amtAbs).toLocaleString('ko-KR') : '';
 
   var row = document.createElement('div');
+  var signedDisplay = amtStr ? (sign > 0 ? '+' : '−') + amtStr : '';
   row.className = 'extra-row'; row.id = 'erow-' + uid;
   row.innerHTML =
-    _extraSelHtml(uid, val) +
-    '<input class="extra-label-inp" id="elbl-'+uid+'" placeholder="항목명" value="'+(customLabel||'')+'" style="display:'+(isCustom?'block':'none')+'" oninput="_recalcExtra(\''+prefix+'\')">' +
-    '<button class="extra-sign '+(isCustom?'show ':'')+((isCustom&&customSign<0)?'neg':'pos')+'" id="esgn-'+uid+'" onclick="toggleCustomSign(\''+uid+'\',\''+prefix+'\')">'+(isCustom&&customSign<0?'−':'+')+'</button>' +
-    '<input class="extra-amt '+(sign>0?'pos':'neg')+'" id="eamt-'+uid+'" inputmode="numeric" placeholder="금액" value="'+amtStr+'" oninput="fmtInp(this);_recalcExtra(\''+prefix+'\')">' +
-    '<button class="extra-del" onclick="removeExtraRow(\''+uid+'\',\''+prefix+'\')">×</button>';
+    '<div class="extra-row-top">' +
+      _extraSelHtml(uid, val) +
+      '<button class="extra-del" onclick="removeExtraRow(\''+uid+'\',\''+prefix+'\')">×</button>' +
+    '</div>' +
+    '<div class="extra-row-mid'+(isCustom?' show':'')+'" id="emid-'+uid+'">' +
+      '<input class="extra-label-inp" id="elbl-'+uid+'" placeholder="항목명 입력" value="'+(customLabel||'')+'" oninput="_recalcExtra(\''+prefix+'\')">' +
+    '</div>' +
+    '<div class="extra-row-bot">' +
+      '<div class="extra-sign-wrap'+(isCustom?' show':'')+'" id="eswrap-'+uid+'">' +
+        '<button class="extra-sign'+(isCustom&&customSign>0?' active-pos':'')+'" id="esgn-pos-'+uid+'" onclick="setCustomSign(\''+uid+'\',1,\''+prefix+'\')" title="양수(+)">+</button>' +
+        '<button class="extra-sign'+(isCustom&&customSign<0?' active-neg':'')+'" id="esgn-neg-'+uid+'" onclick="setCustomSign(\''+uid+'\',-1,\''+prefix+'\')" title="음수(−)">−</button>' +
+      '</div>' +
+      '<input class="extra-amt '+(sign>0?'pos':'neg')+'" id="eamt-'+uid+'" inputmode="numeric" placeholder="'+(prefix==='sal'?'월 금액':'연간 금액')+'" value="'+signedDisplay+'" oninput="onExtraAmtType(this,\''+uid+'\',\''+prefix+'\')">' +
+    '</div>';
 
   document.getElementById(prefix + '-extra-rows').appendChild(row);
 }
 
-function toggleCustomSign(uid, prefix) {
-  var sgn = document.getElementById('esgn-' + uid);
+function setCustomSign(uid, sign, prefix) {
+  var pos = document.getElementById('esgn-pos-' + uid);
+  var neg = document.getElementById('esgn-neg-' + uid);
   var amt = document.getElementById('eamt-' + uid);
-  if (!sgn) return;
-  var isPos = sgn.classList.contains('pos');
-  sgn.classList.toggle('pos', !isPos); sgn.classList.toggle('neg', isPos);
-  sgn.textContent = isPos ? '−' : '+';
-  if (amt) { amt.classList.toggle('pos', !isPos); amt.classList.toggle('neg', isPos); }
+  if (pos) { pos.classList.toggle('active-pos', sign > 0); pos.classList.remove('active-neg'); }
+  if (neg) { neg.classList.toggle('active-neg', sign < 0); neg.classList.remove('active-pos'); }
+  if (amt) {
+    amt.className = 'extra-amt ' + (sign > 0 ? 'pos' : 'neg');
+    /* 기존 값에 기호 갱신 */
+    var raw = amt.value.replace(/[^0-9,]/g,'').replace(/,/g,'');
+    if (raw) amt.value = (sign > 0 ? '+' : '−') + Number(raw).toLocaleString('ko-KR');
+  }
   _recalcExtra(prefix);
 }
 
+function onExtraAmtType(el, uid, prefix) {
+  /* 기호 제거 후 숫자만 포맷, 다시 기호 붙이기 */
+  var raw = el.value.replace(/[^0-9]/g,'');
+  var sel = document.getElementById('esel-' + uid);
+  var isCustom = sel && sel.value === 'custom';
+  var sign = 1;
+  if (isCustom) {
+    var pos = document.getElementById('esgn-pos-' + uid);
+    sign = (pos && pos.classList.contains('active-pos')) ? 1 : -1;
+  } else {
+    var opt = _extraOpts.filter(function(o){return sel && o.v===sel.value;})[0];
+    sign = opt ? opt.sign : 1;
+  }
+  el.className = 'extra-amt ' + (sign > 0 ? 'pos' : 'neg');
+  if (raw) el.value = (sign > 0 ? '+' : '−') + Number(raw).toLocaleString('ko-KR');
+  else el.value = '';
+  _recalcExtra(prefix);
+}
 function _recalcExtra(prefix) {
   if (prefix === 'sal') calcExtraSal();
   else calcExtraAnnual();
@@ -816,16 +890,20 @@ function _recalcExtra(prefix) {
 
 function onExtraSelChange(uid, prefix) {
   var sel = document.getElementById('esel-' + uid);
-  var lbl = document.getElementById('elbl-' + uid);
+  var mid = document.getElementById('emid-' + uid);
   var amt = document.getElementById('eamt-' + uid);
-  var sgn = document.getElementById('esgn-' + uid);
+  var swrap = document.getElementById('eswrap-' + uid);
   var opt = _extraOpts.filter(function(o){return o.v===sel.value;})[0];
   if (!opt) return;
   var isCustom = sel.value === 'custom';
-  if (lbl) lbl.style.display = isCustom ? 'block' : 'none';
-  if (sgn) sgn.classList.toggle('show', isCustom);
-  var sign = isCustom ? (sgn && sgn.classList.contains('neg') ? -1 : 1) : opt.sign;
-  if (amt) amt.className = 'extra-amt ' + (sign > 0 ? 'pos' : 'neg');
+  if (mid) mid.classList.toggle('show', isCustom);
+  if (swrap) swrap.classList.toggle('show', isCustom);
+  var sign = isCustom ? 1 : opt.sign; /* 직접입력 기본 양수, 나머지는 preset */
+  if (amt) {
+    amt.className = 'extra-amt ' + (sign > 0 ? 'pos' : 'neg');
+    var raw = amt.value.replace(/[^0-9]/g,'');
+    if (raw) amt.value = (sign > 0 ? '+' : '−') + Number(raw).toLocaleString('ko-KR');
+  }
   _recalcExtra(prefix);
 }
 
@@ -851,13 +929,21 @@ function getExtraItems(prefix) {
   rows.querySelectorAll('.extra-row').forEach(function(row) {
     var id = row.id.replace('erow-', '');
     var sel = document.getElementById('esel-' + id);
-    var amt = rawNum('eamt-' + id);
+    var amtEl = document.getElementById('eamt-' + id);
     var lbl = document.getElementById('elbl-' + id);
-    var sgn = document.getElementById('esgn-' + id);
-    if (!sel || !amt) return;
+    if (!sel || !amtEl || !amtEl.value) return;
+    var raw = amtEl.value.replace(/[^0-9]/g,'');
+    var amt = parseInt(raw) || 0;
+    if (!amt) return;
     var opt = _extraOpts.filter(function(o){return o.v===sel.value;})[0];
     var isCustom = sel.value === 'custom';
-    var sign = isCustom ? (sgn && sgn.classList.contains('neg') ? -1 : 1) : (opt ? opt.sign : 1);
+    var sign;
+    if (isCustom) {
+      var pos = document.getElementById('esgn-pos-' + id);
+      sign = (pos && pos.classList.contains('active-pos')) ? 1 : -1;
+    } else {
+      sign = opt ? opt.sign : 1;
+    }
     var label = isCustom ? (lbl ? lbl.value || '기타' : '기타') : (opt ? opt.label : '기타');
     var signed = amt * sign;
     if (sel.value === 'nontax') nontax += amt;
@@ -928,7 +1014,7 @@ function pgSal() {
   '<div class="extra-sec">' +
     '<button class="extra-toggle" id="sal-extra-toggle" onclick="toggleExtra(\'sal\')">' +
       '<span class="extra-toggle-label">추가 공제 / 비과세 입력 (선택)</span>' +
-      '<span class="extra-toggle-arrow">▾</span>' +
+      '<span class="extra-toggle-arrow">›</span>' +
     '</button>' +
     '<div class="extra-body" id="sal-extra-body">' +
       '<div id="sal-extra-rows"></div>' +
@@ -1022,7 +1108,7 @@ function calcSalCore(fromGross) {
     if (linked) { var ne = document.getElementById('t2n'); if (ne) ne.value = Math.round(d.net).toLocaleString('ko-KR'); }
   } else {
     var net = rawNum('t2n'); if (!net || net <= 0) return;
-    var lo = net, hi = net * 2.5;
+    var lo = Math.max(net, nt), hi = Math.max(net * 2.5, nt * 3);
     for (var i = 0; i < 60; i++) { var m = (lo+hi)/2; deduct(m,nt,dep,'salary').net < net ? lo=m : hi=m; }
     g = Math.round((lo+hi)/2); d = deduct(g, nt, dep, 'salary');
     if (linked) { var ge = document.getElementById('t1g'); if (ge) ge.value = g.toLocaleString('ko-KR'); }
@@ -1072,6 +1158,7 @@ function pgHourly() {
   '<div style="margin-top:12px">' +
     '<div class="rr"><div class="rl">주휴수당(주)</div><div class="rv" id="hw-r1">-</div></div>' +
     '<div class="rr"><div class="rl">월 총 근로시간</div><div class="rv" id="hw-r2">-</div></div>' +
+    '<div class="dv"></div>' +
     '<div class="rr g"><div class="rl">월급(세전)</div><div class="rv" id="hw-r3">-</div></div>' +
     '<div class="rr g"><div class="rl">연봉(세전)</div><div class="rv" id="hw-r6">-</div></div>' +
     '<div class="dv"></div>' +
@@ -1148,7 +1235,9 @@ function pgRet() {
   '</div>' +
   '<div class="rr"><div class="rl">재직기간</div><div class="rv" id="rra">-</div></div>' +
   '<div class="rr"><div class="rl">1일 평균임금</div><div class="rv" id="rrb">-</div></div>' +
+  '<div class="dv"></div>' +
   '<div class="rr g"><div class="rl">월급(세전)</div><div class="rv" id="rrc-gross">-</div></div>' +
+  '<div class="dv"></div>' +
   '<div class="rr tot"><div class="rl">예상 퇴직금</div><div class="rv" id="rrc">-</div></div>' +
   '<div class="fml">' +
   '퇴직금 = 1일 평균임금 × 30 × (재직일수 ÷ 365)<br>' +
@@ -1185,7 +1274,7 @@ function calcRet() {
     if (netEl && netEl.value === '' && linkedMode.retire) netEl.value = Math.round(dTmp.net).toLocaleString('ko-KR');
   } else if (salNet > 0) {
     /* 세전 역산 */
-    var lo = salNet, hi = salNet * 2.5;
+    var lo = Math.max(salNet, nt), hi = Math.max(salNet * 2.5, nt * 3);
     for (var i = 0; i < 60; i++) { var m2 = (lo+hi)/2; deduct(m2,nt,dep,'retire').net < salNet ? lo=m2 : hi=m2; }
     sal = Math.round((lo+hi)/2);
     grossDisplay = sal;
@@ -1232,9 +1321,12 @@ function pgUne() {
   '</div>' +
   '<div class="rr"><div class="rl">퇴사 시 만 나이</div><div class="rv" id="ua">-</div></div>' +
   '<div class="rr"><div class="rl">고용보험 가입기간</div><div class="rv" id="ui">-</div></div>' +
+  '<div class="dv"></div>' +
   '<div class="rr g"><div class="rl">월급(세전)</div><div class="rv" id="u-gross">-</div></div>' +
+  '<div class="dv"></div>' +
   '<div class="rr"><div class="rl">1일 구직급여액</div><div class="rv" id="ud">-</div></div>' +
   '<div class="rr"><div class="rl">지급기간</div><div class="rv" id="uu">-</div></div>' +
+  '<div class="dv"></div>' +
   '<div class="rr tot"><div class="rl">예상 실업급여 총액</div><div class="rv" id="ut">-</div></div>' +
   '<div class="fml" id="une-fml">' +
   '구직급여 일액 = 1일 평균임금(월급÷30) × 60%<br>' +
@@ -1268,7 +1360,7 @@ function calcUne() {
     var netEl = document.getElementById('usl-net');
     if (netEl && netEl.value === '' && linkedMode.unemp) netEl.value = Math.round(dTmp.net).toLocaleString('ko-KR');
   } else if (salNet > 0) {
-    var lo = salNet, hi = salNet * 2.5;
+    var lo = Math.max(salNet, nt), hi = Math.max(salNet * 2.5, nt * 3);
     for (var i = 0; i < 60; i++) { var m2 = (lo+hi)/2; deduct(m2,nt,dep,'unemp').net < salNet ? lo=m2 : hi=m2; }
     sal = Math.round((lo+hi)/2);
     var gEl = document.getElementById('usl');
@@ -1326,6 +1418,7 @@ function pgSim() {
   '</div>' +
   '<div class="ig"><span class="il">연간 상여금(원)</span>' + numInp('sbon','0','calcSim()') + '</div>' +
   '<div class="rr g"><div class="rl">월급(세전)</div><div class="rv" id="s-gross">-</div></div>' +
+  '<div class="dv"></div>' +
   '<div class="rr"><div class="rl">월급(세후)</div><div class="rv" id="sna">-</div></div>' +
   '<div class="rr"><div class="rl">퇴직금</div><div class="rv" id="snb">-</div></div>' +
   '<div class="rr"><div class="rl">실업급여 총액 (예상)</div><div class="rv" id="snc">-</div></div>' +
@@ -1362,7 +1455,7 @@ function calcSim() {
     var netEl = document.getElementById('ssal-net');
     if (netEl && netEl.value === '' && linkedMode.sim) netEl.value = Math.round(dTmp.net).toLocaleString('ko-KR');
   } else if (salNet > 0) {
-    var lo = salNet, hi = salNet * 2.5;
+    var lo = Math.max(salNet, nt), hi = Math.max(salNet * 2.5, nt * 3);
     for (var i = 0; i < 60; i++) { var m2 = (lo+hi)/2; deduct(m2,nt,dep,'sim').net < salNet ? lo=m2 : hi=m2; }
     sal = Math.round((lo+hi)/2);
     var gEl = document.getElementById('ssal');
@@ -1410,10 +1503,25 @@ function doReset(cid) {
   var m = RM[cid]; if (!m) return;
   m.inp.forEach(function(id) { var e = document.getElementById(id); if (e) e.value = ''; });
   m.out.forEach(function(id) { st(id, '-'); });
-  // 기타 공제 행 숨김
+  /* 기타 공제 행 숨김 */
   var otherMap = {'card-annual':'an-r-oth','card-salary':'sal-r-oth'};
   if(otherMap[cid]) _hideOther(otherMap[cid]);
-  // 연결고리 상태 초기화
+  /* 추가공제/비과세 초기화 */
+  var prefix = cid === 'card-annual' ? 'an' : cid === 'card-salary' ? 'sal' : null;
+  if (prefix) {
+    var rows = document.getElementById(prefix + '-extra-rows');
+    if (rows) rows.innerHTML = '';
+    var result = document.getElementById(prefix + '-extra-result');
+    if (result) result.innerHTML = '';
+    /* 섹션 닫기 */
+    var tog = document.getElementById(prefix + '-extra-toggle');
+    var body = document.getElementById(prefix + '-extra-body');
+    if (tog) tog.classList.remove('open');
+    if (body) body.classList.remove('open');
+    var arrow = tog ? tog.querySelector('.extra-toggle-arrow') : null;
+    if (arrow) arrow.style.transform = '';
+  }
+  /* 연결고리 상태 초기화 */
   var pageMap = {'card-annual':'annual','card-salary':'salary','card-retire':'retire','card-unemp':'unemp','card-sim':'sim'};
   var page = pageMap[cid];
   if(page && !linkedMode[page]){
@@ -1470,6 +1578,51 @@ function buildText(cid, memo) {
                  row.classList.contains('tot') ? '\u00ABT\u00BB' : '';
     lines.push(prefix + l.textContent.trim() + ' : ' + v.textContent.trim());
   });
+
+  /* 추가공제 입력 항목 — 항상 캡처 (extra-body 열림 여부, 계산 여부 무관) */
+  var extraRows = card.querySelectorAll('.extra-row');
+  if (extraRows.length) {
+    var extraLines = [];
+    extraRows.forEach(function(row) {
+      var id = row.id.replace('erow-', '');
+      var sel = document.getElementById('esel-' + id);
+      var lbl = document.getElementById('elbl-' + id);
+      var amtEl = document.getElementById('eamt-' + id);
+      if (!sel || !amtEl || !amtEl.value) return;
+      var raw = amtEl.value.replace(/[^0-9]/g,'');
+      var amt = parseInt(raw) || 0;
+      if (!amt) return;
+      var opt = _extraOpts.filter(function(o){return o.v===sel.value;})[0];
+      var isCustom = sel.value === 'custom';
+      var sign;
+      if (isCustom) {
+        var pos = document.getElementById('esgn-pos-' + id);
+        sign = (pos && pos.classList.contains('active-pos')) ? 1 : -1;
+      } else {
+        sign = opt ? opt.sign : 1;
+      }
+      var label = isCustom ? (lbl ? lbl.value || '기타' : '기타') : (opt ? opt.label : '기타');
+      var signed = amt * sign;
+      var unit = cid === 'card-annual' ? '연' : '월';
+      var marker = signed >= 0 ? '\u00ABEP\u00BB' : '\u00ABEN\u00BB';
+      extraLines.push(marker + label + '(' + unit + ') : ' + (signed >= 0 ? '+' : '') + signed.toLocaleString('ko-KR') + '원');
+    });
+    if (extraLines.length) {
+      lines.push('---');
+      extraLines.forEach(function(l){ lines.push(l); });
+    }
+  }
+
+  /* 추가공제 계산 결과 (조정 후 실수령) */
+  var extraResult = card.querySelector('.extra-result');
+  if (extraResult) {
+    extraResult.querySelectorAll('.rr.extra-tot').forEach(function(row) {
+      var l = row.querySelector('.rl'), v = row.querySelector('.rv');
+      if (!l || !v) return;
+      lines.push('\u00ABET\u00BB' + l.textContent.trim() + ' : ' + v.textContent.trim());
+    });
+  }
+
   return lines.join('\n').trim();
 }
 
@@ -1587,7 +1740,7 @@ function renderSidebar(preserveState) {
           '<span class="sh-cat-title">' + esc(labels[cid]) + '</span>' +
           '<div class="sh-cat-right">' +
             '<span class="sh-cat-count">' + hist.length + '</span>' +
-            '<span class="sh-cat-arrow" id="arrow-' + cid + '">▶</span>' +
+            '<span class="sh-cat-arrow" id="arrow-' + cid + '">›</span>' +
           '</div>' +
         '</div>' +
         '<div class="sh-cat-body" id="catbody-' + cid + '">' + cardsHtml + '</div>' +
@@ -1604,19 +1757,16 @@ function renderSidebar(preserveState) {
     var arrow   = document.getElementById('arrow-'   + cid);
     if (catBody) catBody.classList.add('open');
     if (hdr)    hdr.classList.add('open');
-    if (arrow)  arrow.textContent = '▼';
   });
 }
 
 function toggleCat(cid) {
   var hdr     = document.getElementById('cathdr-'  + cid);
   var catBody = document.getElementById('catbody-' + cid);
-  var arrow   = document.getElementById('arrow-'   + cid);
   if (!catBody) return;
   var isOpen = catBody.classList.contains('open');
   catBody.classList.toggle('open', !isOpen);
-  if (hdr)   hdr.classList.toggle('open', !isOpen);
-  if (arrow) arrow.textContent = isOpen ? '▶' : '▼';
+  if (hdr) hdr.classList.toggle('open', !isOpen);
 }
 
 function showHistDetail(i) {
@@ -1658,18 +1808,25 @@ function showHistDetail(i) {
     var sep = line.indexOf(' : ');
     if (sep < 0) continue;
 
-    /* 색상 마커 추출 «G» «T» */
+    /* 색상 마커 추출 */
     var rawKey = line.slice(0, sep);
     var marker = '';
-    if (rawKey.slice(0,3) === '\u00ABG\u00BB') { marker = 'g';   rawKey = rawKey.slice(3); }
-    else if (rawKey.slice(0,3) === '\u00ABT\u00BB') { marker = 'tot'; rawKey = rawKey.slice(3); }
+    if      (rawKey.slice(0,4) === '\u00ABEP\u00BB') { marker = 'ep';  rawKey = rawKey.slice(4); }
+    else if (rawKey.slice(0,4) === '\u00ABEN\u00BB') { marker = 'en';  rawKey = rawKey.slice(4); }
+    else if (rawKey.slice(0,4) === '\u00ABET\u00BB') { marker = 'et';  rawKey = rawKey.slice(4); }
+    else if (rawKey.slice(0,3) === '\u00ABG\u00BB')  { marker = 'g';   rawKey = rawKey.slice(3); }
+    else if (rawKey.slice(0,3) === '\u00ABT\u00BB')  { marker = 'tot'; rawKey = rawKey.slice(3); }
     var k = rawKey.trim();
     var v = line.slice(sep + 3).trim();
 
-    var cls = !inResult ? 'inp' : marker || '';
+    /* extra 항목(ep/en/et): 배경 없이 텍스트 색상만 */
+    var cls = !inResult ? 'inp' : (marker === 'g' ? 'g' : marker === 'tot' ? 'tot' : '');
+    var rvExtra = marker === 'ep' ? ' style="color:#10b981"'
+                : marker === 'en' ? ' style="color:var(--red)"'
+                : marker === 'et' ? ' style="font-weight:800"' : '';
     html += '<div class="hd-row ' + cls + '">' +
               '<div class="hd-rl">' + esc(k) + '</div>' +
-              '<div class="hd-rv">' + esc(v) + '</div>' +
+              '<div class="hd-rv"' + rvExtra + '>' + esc(v) + '</div>' +
             '</div>';
   }
 
