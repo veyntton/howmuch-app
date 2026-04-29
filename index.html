@@ -1240,6 +1240,7 @@ function execSave() {
   hist.unshift(text);
   if (hist.length > 20) hist.pop();
   try { localStorage.setItem(key, JSON.stringify(hist)); } catch(x) {}
+  if (window.ToastChannel) ToastChannel.postMessage('저장 완료');
 }
 
 /* ===== 사이드바 ===== */
