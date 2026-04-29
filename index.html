@@ -39,7 +39,7 @@ body.no-scroll{overflow:hidden;}
   padding:calc(env(safe-area-inset-top,36px) + 72px) 18px 120px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .menu-header{text-align:center;margin-bottom:2rem;}
-.menu-header h1{font-size:2.8rem;font-weight:900;color:var(--red);letter-spacing:-0.05em;line-height:1;}
+.menu-header h1{font-size:2.8rem;font-weight:600;color:var(--red);letter-spacing:-0.05em;line-height:1;}
 .menu-header p{color:var(--text-muted);font-size:0.8rem;margin-top:7px;}
 .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:480px;}
 .menu-btn{padding:16px 14px;background:var(--card-bg);border:1px solid var(--card-border);
@@ -218,7 +218,7 @@ select.inp{appearance:none;cursor:pointer;
   background:var(--darker);display:flex;flex-direction:column;align-items:center;justify-content:center;
   transition:opacity .5s ease;}
 #splash.hide{opacity:0;}
-.splash-name{font-size:2.4rem;font-weight:900;color:var(--red);letter-spacing:-0.05em;}
+.splash-name{font-size:2.4rem;font-weight:600;color:var(--red);letter-spacing:-0.05em;}
 .splash-sub{font-size:0.85rem;font-weight:400;color:var(--text-muted);margin-top:6px;letter-spacing:0.01em;}
 
 .ov{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9000;
@@ -1240,7 +1240,6 @@ function execSave() {
   hist.unshift(text);
   if (hist.length > 20) hist.pop();
   try { localStorage.setItem(key, JSON.stringify(hist)); } catch(x) {}
-  if (window.ToastChannel) ToastChannel.postMessage('저장 완료');
 }
 
 /* ===== 사이드바 ===== */
