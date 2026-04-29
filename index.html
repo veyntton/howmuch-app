@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -121,6 +120,51 @@ select.inp{appearance:none;cursor:pointer;
 .year-sel:focus{border-color:var(--red);outline:none;}
 .year-badge{font-size:0.68rem;font-weight:700;color:var(--red);background:rgba(225,0,42,.12);
   border:1px solid rgba(225,0,42,.3);border-radius:4px;padding:3px 8px;white-space:nowrap;}
+
+/* ===== 추가 공제 섹션 ===== */
+.extra-sec{margin-top:14px;border:1px solid var(--card-border);border-radius:10px;overflow:hidden;}
+.extra-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:10px 13px;background:var(--formula-bg);border:none;cursor:pointer;font-family:inherit;}
+.extra-toggle-label{font-size:0.78rem;font-weight:700;color:var(--text-secondary);}
+.extra-toggle-arrow{font-size:0.82rem;color:var(--text-muted);transition:transform .2s;}
+.extra-toggle.open .extra-toggle-arrow{transform:rotate(180deg);}
+.extra-body{display:none;padding:10px 10px 6px;}
+.extra-body.open{display:block;}
+.extra-row{display:flex;align-items:center;gap:6px;margin-bottom:7px;}
+.extra-sel{flex:0 0 auto;height:36px;font-size:0.74rem;font-family:inherit;
+  background:var(--input-bg);border:1px solid var(--input-border);border-radius:6px;
+  color:var(--text-primary);padding:0 6px;cursor:pointer;max-width:148px;}
+.extra-label-inp{flex:0 0 90px;height:36px;font-size:0.74rem;font-family:inherit;
+  background:var(--input-bg);border:1px solid var(--input-border);border-radius:6px;
+  color:var(--text-primary);padding:0 8px;}
+.extra-amt{flex:1;height:36px;font-size:0.78rem;font-family:inherit;text-align:right;
+  background:var(--input-bg);border:1px solid var(--input-border);border-radius:6px;
+  color:var(--text-primary);padding:0 8px;}
+.extra-amt.pos{border-color:rgba(16,185,129,.45);color:#10b981;}
+.extra-amt.neg{border-color:rgba(225,0,42,.35);color:var(--red);}
+.extra-del{width:28px;height:28px;flex-shrink:0;background:none;
+  border:1px solid var(--card-border);border-radius:5px;cursor:pointer;
+  color:var(--text-muted);font-size:1rem;line-height:1;font-family:inherit;}
+.extra-del:hover{border-color:var(--red);color:var(--red);}
+.extra-sign{width:32px;height:36px;flex-shrink:0;background:none;border:1px solid var(--card-border);
+  border-radius:6px;cursor:pointer;font-size:1rem;font-weight:700;font-family:inherit;color:var(--text-muted);
+  display:none;align-items:center;justify-content:center;}
+.extra-sign.show{display:flex;}
+.extra-sign.pos{border-color:rgba(16,185,129,.45);color:#10b981;background:rgba(16,185,129,.07);}
+.extra-sign.neg{border-color:rgba(225,0,42,.35);color:var(--red);background:rgba(225,0,42,.06);}
+.extra-add{width:100%;height:34px;background:none;border:1px dashed var(--card-border);
+  border-radius:6px;color:var(--text-muted);font-size:0.75rem;font-weight:700;
+  cursor:pointer;font-family:inherit;margin-top:2px;transition:color .15s,border-color .15s;}
+.extra-add:hover{border-color:var(--red);color:var(--red);}
+.extra-result{margin-top:8px;}
+.rr.extra-pos{border-color:rgba(16,185,129,.35);}
+.rr.extra-pos .rl{background:rgba(16,185,129,.07);color:#10b981;}
+.rr.extra-pos .rv{background:rgba(16,185,129,.07);color:#10b981;}
+.rr.extra-neg .rl{background:rgba(225,0,42,.06);color:var(--red);}
+.rr.extra-neg .rv{background:rgba(225,0,42,.06);color:var(--red);}
+.rr.extra-tot{border-color:rgba(16,185,129,.45);}
+.rr.extra-tot .rl{background:rgba(16,185,129,.12);color:#059669;font-weight:800;}
+.rr.extra-tot .rv{background:rgba(16,185,129,.12);color:#059669;font-weight:800;}
 
 /* ===== 햄버거 버튼 ===== */
 .hamburger-btn{background:none;border:none;cursor:pointer;padding:5px 8px;
@@ -627,9 +671,19 @@ function pgAnnual() {
     '<div class="ig"><span class="il">식대 비과세</span>' + ntSel.replace('%id%','an-nt').replace('%fn%','annualAny()') + '</div>' +
     '<div class="ig"><span class="il">부양가족수</span>' + depSel.replace('%id%','an-dep').replace('%fn%','annualAny()') + '</div>' +
   '</div>' +
-  '<div class="ig"><span class="il">상여금 포함 여부</span>' +
-    '<select class="inp" id="an-bon" onchange="annualAny()">' +
-    '<option value="0">없음</option><option value="1">연봉에 포함</option></select></div>' +
+
+  /* 추가 공제 섹션 */
+  '<div class="extra-sec">' +
+    '<button class="extra-toggle" id="an-extra-toggle" onclick="toggleExtra(\'an\')">' +
+      '<span class="extra-toggle-label">추가 공제 / 비과세 입력 (선택)</span>' +
+      '<span class="extra-toggle-arrow">▾</span>' +
+    '</button>' +
+    '<div class="extra-body" id="an-extra-body">' +
+      '<div id="an-extra-rows"></div>' +
+      '<button class="extra-add" onclick="addExtraRow(\'an\')">+ 항목 추가</button>' +
+      '<div class="extra-result" id="an-extra-result"></div>' +
+    '</div>' +
+  '</div>' +
 
   '<div style="margin-top:12px">' +
     '<div class="rr g"><div class="rl">연봉(세전)</div><div class="rv" id="an-r-ya">-</div></div>' +
@@ -649,6 +703,7 @@ function pgAnnual() {
     '<div class="rr" id="an-r-oth" style="display:none"><div class="rl" id="an-r-oth-l">기타 공제(연)</div><div class="rv">-</div></div>' +
   '</div>' +
   '<div class="fml" id="an-fml">※ 세전 또는 세후 중 하나를 입력하면 자동 계산됩니다<br>※ 소득세는 근로소득공제+간이세액표 기반 근사값</div>' +
+
   '</div></div>';
 }
 
@@ -701,6 +756,152 @@ function calcAnnualCore(fromGross) {
     '※ 건강보험 ' + (R.HR*100).toFixed(3) + '% · 고용보험 ' + (R.ER*100).toFixed(1) + '%';
 }
 
+/* ===== 추가 공제 / 비과세 ===== */
+var _extraOpts = [
+  { v:'nontax',  label:'비과세 금액',       sign: 1 },
+  { v:'union',   label:'노조회비',           sign:-1 },
+  { v:'ytax',    label:'연말정산 추가납부',  sign:-1 },
+  { v:'yref',    label:'연말정산 환급',      sign: 1 },
+  { v:'other',   label:'기타공제',           sign:-1 },
+  { v:'custom',  label:'직접입력',           sign: 0 }
+];
+var _extraIdSeq = 0;
+
+function _extraSelHtml(uid, val) {
+  var prefix = uid.split('_')[0];
+  var html = '<select class="extra-sel" id="esel-'+uid+'" onchange="onExtraSelChange(\''+uid+'\',\''+prefix+'\')">';
+  _extraOpts.forEach(function(o) {
+    html += '<option value="'+o.v+'"'+(val===o.v?' selected':'')+'>'+o.label+'</option>';
+  });
+  return html + '</select>';
+}
+
+function addExtraRow(prefix, val, amt, customLabel) {
+  var uid = prefix + '_' + (++_extraIdSeq);
+  val = val || 'union';
+  var opt = _extraOpts.filter(function(o){return o.v===val;})[0] || _extraOpts[0];
+  var isCustom = val === 'custom';
+  var customSign = (amt !== undefined && amt < 0) ? -1 : 1;
+  var sign = opt.sign !== 0 ? opt.sign : customSign;
+  var amtAbs = amt ? Math.abs(amt) : '';
+  var amtStr = amtAbs ? Number(amtAbs).toLocaleString('ko-KR') : '';
+
+  var row = document.createElement('div');
+  row.className = 'extra-row'; row.id = 'erow-' + uid;
+  row.innerHTML =
+    _extraSelHtml(uid, val) +
+    '<input class="extra-label-inp" id="elbl-'+uid+'" placeholder="항목명" value="'+(customLabel||'')+'" style="display:'+(isCustom?'block':'none')+'" oninput="_recalcExtra(\''+prefix+'\')">' +
+    '<button class="extra-sign '+(isCustom?'show ':'')+((isCustom&&customSign<0)?'neg':'pos')+'" id="esgn-'+uid+'" onclick="toggleCustomSign(\''+uid+'\',\''+prefix+'\')">'+(isCustom&&customSign<0?'−':'+')+'</button>' +
+    '<input class="extra-amt '+(sign>0?'pos':'neg')+'" id="eamt-'+uid+'" inputmode="numeric" placeholder="금액" value="'+amtStr+'" oninput="fmtInp(this);_recalcExtra(\''+prefix+'\')">' +
+    '<button class="extra-del" onclick="removeExtraRow(\''+uid+'\',\''+prefix+'\')">×</button>';
+
+  document.getElementById(prefix + '-extra-rows').appendChild(row);
+}
+
+function toggleCustomSign(uid, prefix) {
+  var sgn = document.getElementById('esgn-' + uid);
+  var amt = document.getElementById('eamt-' + uid);
+  if (!sgn) return;
+  var isPos = sgn.classList.contains('pos');
+  sgn.classList.toggle('pos', !isPos); sgn.classList.toggle('neg', isPos);
+  sgn.textContent = isPos ? '−' : '+';
+  if (amt) { amt.classList.toggle('pos', !isPos); amt.classList.toggle('neg', isPos); }
+  _recalcExtra(prefix);
+}
+
+function _recalcExtra(prefix) {
+  if (prefix === 'sal') calcExtraSal();
+  else calcExtraAnnual();
+}
+
+function onExtraSelChange(uid, prefix) {
+  var sel = document.getElementById('esel-' + uid);
+  var lbl = document.getElementById('elbl-' + uid);
+  var amt = document.getElementById('eamt-' + uid);
+  var sgn = document.getElementById('esgn-' + uid);
+  var opt = _extraOpts.filter(function(o){return o.v===sel.value;})[0];
+  if (!opt) return;
+  var isCustom = sel.value === 'custom';
+  if (lbl) lbl.style.display = isCustom ? 'block' : 'none';
+  if (sgn) sgn.classList.toggle('show', isCustom);
+  var sign = isCustom ? (sgn && sgn.classList.contains('neg') ? -1 : 1) : opt.sign;
+  if (amt) amt.className = 'extra-amt ' + (sign > 0 ? 'pos' : 'neg');
+  _recalcExtra(prefix);
+}
+
+function removeExtraRow(uid, prefix) {
+  var row = document.getElementById('erow-' + uid);
+  if (row) row.remove();
+  _recalcExtra(prefix);
+}
+
+function toggleExtra(prefix) {
+  var tog = document.getElementById(prefix + '-extra-toggle');
+  var body = document.getElementById(prefix + '-extra-body');
+  if (!tog || !body) return;
+  var open = body.classList.contains('open');
+  tog.classList.toggle('open', !open);
+  body.classList.toggle('open', !open);
+}
+
+function getExtraItems(prefix) {
+  var rows = document.getElementById(prefix + '-extra-rows');
+  if (!rows) return { nontax: 0, adj: 0, items: [] };
+  var nontax = 0, adj = 0, items = [];
+  rows.querySelectorAll('.extra-row').forEach(function(row) {
+    var id = row.id.replace('erow-', '');
+    var sel = document.getElementById('esel-' + id);
+    var amt = rawNum('eamt-' + id);
+    var lbl = document.getElementById('elbl-' + id);
+    var sgn = document.getElementById('esgn-' + id);
+    if (!sel || !amt) return;
+    var opt = _extraOpts.filter(function(o){return o.v===sel.value;})[0];
+    var isCustom = sel.value === 'custom';
+    var sign = isCustom ? (sgn && sgn.classList.contains('neg') ? -1 : 1) : (opt ? opt.sign : 1);
+    var label = isCustom ? (lbl ? lbl.value || '기타' : '기타') : (opt ? opt.label : '기타');
+    var signed = amt * sign;
+    if (sel.value === 'nontax') nontax += amt;
+    else adj += signed;
+    items.push({ label: label, amt: signed, type: sel.value });
+  });
+  return { nontax: nontax, adj: adj, items: items };
+}
+
+function calcExtraAnnual() {
+  var extra = getExtraItems('an');
+  var result = document.getElementById('an-extra-result');
+  if (!result) return;
+  if (!extra.items.length) { result.innerHTML = ''; return; }
+
+  /* 비과세 적용 후 기본 세후 재계산 */
+  var y = curYear['annual'] || 2026;
+  var nt = parseInt(gv('an-nt')) || 200000;
+  var dep = parseInt(gv('an-dep')) || 1;
+  var annual = rawNum('an-sal') || 0;
+  if (!annual) { result.innerHTML = ''; return; }
+
+  var taxableAnnual = Math.max(0, annual - extra.nontax);
+  var mg = Math.round(taxableAnnual / 12);
+  var d = deduct(mg, nt, dep, 'annual');
+  var baseNet = d.net * 12 + extra.nontax; /* 비과세 그대로 수령 */
+  var finalNet = baseNet + extra.adj;
+
+  var html = '<div style="margin-top:10px">';
+  if (extra.nontax > 0) {
+    html += '<div class="rr extra-pos"><div class="rl">비과세 금액(연)</div><div class="rv">+' + won(extra.nontax) + '</div></div>';
+  }
+  extra.items.filter(function(it){return it.type!=='nontax';}).forEach(function(it) {
+    var cls = it.amt >= 0 ? 'extra-pos' : 'extra-neg';
+    var sign = it.amt >= 0 ? '+' : '';
+    html += '<div class="rr '+cls+'"><div class="rl">'+it.label+'(연)</div><div class="rv">'+sign+won(it.amt)+'</div></div>';
+  });
+  html += '<div class="dv"></div>';
+  html += '<div class="rr extra-tot"><div class="rl">조정 후 실수령(연)</div><div class="rv">' + won(finalNet) + '</div></div>';
+  html += '<div class="rr extra-tot"><div class="rl">조정 후 실수령(월)</div><div class="rv">' + won(Math.round(finalNet/12)) + '</div></div>';
+  html += '</div>';
+  result.innerHTML = html;
+}
+
 /* ===== 월급 계산기 ===== */
 function pgSal() {
   return AD + '<div class="card" id="card-salary">' + hdr('월급 계산기', 'card-salary') +
@@ -724,6 +925,18 @@ function pgSal() {
     '<div class="ig"><span class="il">부양가족수 (본인포함)</span>' + depSel.replace('%id%','t1d').replace('%fn%','calcSalAny()') + '</div>' +
   '</div>' +
 
+  '<div class="extra-sec">' +
+    '<button class="extra-toggle" id="sal-extra-toggle" onclick="toggleExtra(\'sal\')">' +
+      '<span class="extra-toggle-label">추가 공제 / 비과세 입력 (선택)</span>' +
+      '<span class="extra-toggle-arrow">▾</span>' +
+    '</button>' +
+    '<div class="extra-body" id="sal-extra-body">' +
+      '<div id="sal-extra-rows"></div>' +
+      '<button class="extra-add" onclick="addExtraRow(\'sal\')">+ 항목 추가</button>' +
+      '<div class="extra-result" id="sal-extra-result"></div>' +
+    '</div>' +
+  '</div>' +
+
   '<div style="margin-top:12px">' +
     '<div class="rr g"><div class="rl">월급(세전)</div><div class="rv" id="r1g">-</div></div>' +
     '<div class="rr g"><div class="rl">연봉(세전)</div><div class="rv" id="r1ann">-</div></div>' +
@@ -743,7 +956,42 @@ function pgSal() {
   '</div>' +
 
   '<div class="fml" id="sal-fml">※ 세전 또는 세후 중 하나를 입력하면 자동 계산됩니다<br>※ 소득세는 근로소득공제+간이세액표 기반 근사값</div>' +
+
   '</div></div>';
+}
+
+function calcExtraSal() {
+  var extra = getExtraItems('sal');
+  var result = document.getElementById('sal-extra-result');
+  if (!result) return;
+  if (!extra.items.length) { result.innerHTML = ''; return; }
+
+  var y = curYear['salary'] || 2026;
+  var nt = parseInt(gv('t1n')) || 200000;
+  var dep = parseInt(gv('t1d')) || 1;
+  var gross = rawNum('t1g') || 0;
+  if (!gross) { result.innerHTML = ''; return; }
+
+  var taxableG = Math.max(0, gross - Math.round(extra.nontax / 12));
+  var d = deduct(taxableG, nt, dep, 'salary');
+  var baseNet = d.net + Math.round(extra.nontax / 12);
+  var finalNetMo = baseNet + Math.round(extra.adj / 12);
+
+  var html = '<div style="margin-top:10px">';
+  if (extra.nontax > 0) {
+    html += '<div class="rr extra-pos"><div class="rl">비과세 금액(월)</div><div class="rv">+' + won(Math.round(extra.nontax/12)) + '</div></div>';
+  }
+  extra.items.filter(function(it){return it.type!=='nontax';}).forEach(function(it) {
+    var mo = Math.round(it.amt / 12);
+    var cls = mo >= 0 ? 'extra-pos' : 'extra-neg';
+    var sign = mo >= 0 ? '+' : '';
+    html += '<div class="rr '+cls+'"><div class="rl">'+it.label+'(월)</div><div class="rv">'+sign+won(mo)+'</div></div>';
+  });
+  html += '<div class="dv"></div>';
+  html += '<div class="rr extra-tot"><div class="rl">조정 후 실수령(월)</div><div class="rv">' + won(finalNetMo) + '</div></div>';
+  html += '<div class="rr extra-tot"><div class="rl">조정 후 실수령(연)</div><div class="rv">' + won(finalNetMo * 12) + '</div></div>';
+  html += '</div>';
+  result.innerHTML = html;
 }
 
 /* 세전 입력 시 */
@@ -1151,7 +1399,7 @@ function calcSim() {
 
 /* ===== 초기화 맵 ===== */
 var RM = {
-  'card-annual': { inp:['an-sal','an-sal-net','an-nt','an-dep','an-bon'], out:['an-r-ya','an-r1','an-r2','an-r3','an-r4','an-r5','an-r6','an-r7','an-r8','an-r9','an-r10'] },
+  'card-annual': { inp:['an-sal','an-sal-net','an-nt','an-dep'], out:['an-r-ya','an-r1','an-r2','an-r3','an-r4','an-r5','an-r6','an-r7','an-r8','an-r9','an-r10'] },
   'card-hourly': { inp:['hw-rate','hw-h','hw-d','hw-dep'],  out:['hw-r1','hw-r2','hw-r3','hw-r4','hw-r5','hw-r6','hw-r7'] },
   'card-salary': { inp:['t1g','t2n','t1n','t1d'], out:['r1a','r1b','r1c','r1d','r1e','r1f','r1g','r1h','r1tot','r1ann','r1ann2'] },
   'card-retire': { inp:['rs','re','rsal','rsal-net','rbon','rlv','r-nt','r-dep'], out:['rra','rrb','rrc','rrc-gross'] },
